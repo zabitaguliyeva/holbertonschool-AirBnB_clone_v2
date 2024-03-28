@@ -8,3 +8,11 @@ class State(BaseModel):
     __tablename__ = 'states'
     name = Column(String(128), nullable = False)
     cities = relationship('City', cascade='all, delete-orphan', backref='state')
+    
+    @property
+    def cities(self):
+        """Getter attribute to return list of City instances with matching state_id"""
+        from models import storage
+        
+        all_cities = storage.all(City)
+        return [city for city in all_cities.values() if city.state_id == self.id]
