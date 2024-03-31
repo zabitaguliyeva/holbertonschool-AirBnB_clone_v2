@@ -1,34 +1,32 @@
 #!/usr/bin/python3
-""" Console Module """
 import cmd
 import sys
 from models.base_model import BaseModel
 from models.__init__ import storage
-from models.user import User
-from models.place import Place
 from models.state import State
 from models.city import City
+from models.user import User
+from models.place import Place
 from models.amenity import Amenity
 from models.review import Review
 
 
 class HBNBCommand(cmd.Cmd):
-    """ Contains the functionality for the HBNB console"""
 
     # determines prompt for interactive/non-interactive modes
     prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
 
     classes = {
-               'BaseModel': BaseModel, 'User': User, 'Place': Place,
-               'State': State, 'City': City, 'Amenity': Amenity,
-               'Review': Review
-              }
+        'BaseModel': BaseModel, 'User': User, 'Place': Place,
+        'State': State, 'City': City, 'Amenity': Amenity,
+        'Review': Review
+    }
     dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
     types = {
-             'number_rooms': int, 'number_bathrooms': int,
-             'max_guest': int, 'price_by_night': int,
-             'latitude': float, 'longitude': float
-            }
+        'number_rooms': int, 'number_bathrooms': int,
+        'max_guest': int, 'price_by_night': int,
+        'latitude': float, 'longitude': float
+    }
 
     def preloop(self):
         """Prints if isatty is false"""
@@ -37,7 +35,6 @@ class HBNBCommand(cmd.Cmd):
 
     def precmd(self, line):
         """Reformat command line for advanced command syntax.
-
         Usage: <class name>.<command>([<id> [<*args> or <**kwargs>]])
         (Brackets denote optional fields in usage example.)
         """
@@ -81,7 +78,7 @@ class HBNBCommand(cmd.Cmd):
                         # _args = _args.replace('\"', '')
             line = ' '.join([_cmd, _cls, _id, _args])
 
-        except Exception as mess:
+        except Exception:
             pass
         finally:
             return line
@@ -114,38 +111,39 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-     """ Create an object of any class with given parameters"""
-     args = args.split()
-     if not args:
-         print("** class name missing **")
-         return
-     elif args[0] not in HBNBCommand.classes:
-         print("** class doesn't exist **")
-         return
-     new_instance = HBNBCommand.classes[args[0]]()
-     if len(args) > 1:
-         for param in args[1:]:
-             try:
-                 key, value = param.split("=")
-                 # Replace underscore with space for string type
-                 if value[0] == '"' and value[-1] == '"':
-                     value = value.replace("_", " ").strip('"')
-                 # Try converting to float and int
-                 else:
-                     try:
-                         if '.' in value:
-                             value = float(value)
-                         else:
-                             value = int(value)
-                     except ValueError:
-                         continue
-                 setattr(new_instance, key, value)
-             except ValueError:
-                 continue
-     storage.save()
-     print(new_instance.id)
-     storage.save()
-        
+        """ Create an object of any class with given parameters"""
+        args = args.split()
+        if not args:
+            print("** class name missing **")
+            return
+        elif args[0] not in HBNBCommand.classes:
+            print("** class doesn't exist **")
+            return
+        new_instance = HBNBCommand.classes[args[0]]()
+        if len(args) > 1:
+            for param in args[1:]:
+                try:
+                    key, value = param.split("=")
+                    # Replace underscore with space for string type
+                    if value[0] == '"' and value[-1] == '"':
+                        value = value.replace("_", " ").strip('"')
+                    # Try converting to float and int
+                    else:
+                        try:
+                            if '.' in value:
+                                value = float(value)
+                            else:
+                                value = int(value)
+                        except ValueError:
+                            continue
+                    setattr(new_instance, key, value)
+                except ValueError:
+                    continue
+        storage.new(new_instance)
+        storage.save()
+        print(new_instance.id)
+        storage.save()
+
     def help_create(self):
         """ Help information for the create method """
         print("Creates a class of any type")
@@ -207,7 +205,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del(storage.all()[key])
+            del (storage.all()[key])
             storage.save()
         except KeyError:
             print("** no instance found **")
@@ -218,7 +216,6 @@ class HBNBCommand(cmd.Cmd):
         print("[Usage]: destroy <className> <objectId>\n")
 
     def do_all(self, args):
-        """ Shows all objects, or all objects of a class"""
         print_list = []
 
         if args:
@@ -226,12 +223,12 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
-                if k.split('.')[0] == args:
-                    print_list.append(str(v))
+            dict = storage.all(HBNBCommand.classes[args])
+            for _, value in dict.items():
+                print_list.append(str(value))
         else:
-            for k, v in storage._FileStorage__objects.items():
-                print_list.append(str(v))
+            for _, value in storage.all().items():
+                print_list.append(str(value))
 
         print(print_list)
 
@@ -249,7 +246,7 @@ class HBNBCommand(cmd.Cmd):
         print(count)
 
     def help_count(self):
-        """ """
+        """ Text for when users types help count """
         print("Usage: count <class_name>")
 
     def do_update(self, args):
@@ -284,7 +281,7 @@ class HBNBCommand(cmd.Cmd):
             return
 
         # first determine if kwargs or args
-        if '{' in args[2] and '}' in args[2] and type(eval(args[2])) is dict:
+        if '{' in args[2] and '}' in args[2] and type(eval(args[2])) == dict:
             kwargs = eval(args[2])
             args = []  # reformat kwargs into list, ex: [<name>, <value>, ...]
             for k, v in kwargs.items():
@@ -339,6 +336,7 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
