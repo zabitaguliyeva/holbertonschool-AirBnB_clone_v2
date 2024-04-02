@@ -73,5 +73,5 @@ class Place(BaseModel, Base):
         @amenities.setter
         def amenities(self, obj):
             """Function that handles append method for adding an amenity"""
-            if type(obj) == Amenity:
+            if type(obj) is Amenity:
                 self.amenities_ids.append(obj.id)
