@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """This module defines a base class for all models in our hbnb clone"""
-import uuid
+from uuid import uuid4
 from datetime import datetime
 from sqlalchemy import Column, String
 from sqlalchemy.sql.sqltypes import DateTime
@@ -22,6 +22,7 @@ class BaseModel:
         """Instatntiates a new model"""
         self.id = str(uuid.uuid4())
         self.created_at = datetime.now()
+        self.updated_at = datetime.now()
         if kwargs:
             for key, value in kwargs.items():
                 if key == "created_at" or key == "updated_at":
