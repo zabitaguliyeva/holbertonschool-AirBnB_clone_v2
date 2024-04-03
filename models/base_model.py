@@ -25,7 +25,7 @@ class BaseModel:
             nullable=False,
             default=datetime.utcnow()
             )
-    
+
     """A base class for all hbnb models"""
     def __init__(self, *args, **kwargs):
         """
@@ -75,4 +75,3 @@ class BaseModel:
         """
         from models import storage
         models.storage.delete(self)
-        
