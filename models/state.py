@@ -1,33 +1,30 @@
 #!/usr/bin/python3
-from sqlalchemy import Column, String
-from models.base_model import Base, BaseModel
+""" State Module for HBNB project """
+from models.base_model import BaseModel, Base
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from models.city import City
 from os import getenv
 
-""" State Module for HBNB project """
-
 
 class State(BaseModel, Base):
     """ State class """
-    __tablename__ = 'states'
-    if getenv('HBNB_TYPE_STORAGE') != 'db':
-        @property
-        def cities(self):
-            """Getter attribute to return list of
-            City instances with matching state_id"""
-            from models import storage
+    __tablename__ = "states"
 
-            all_cities = storage.all(City)
-            return [city for city in all_cities.values()
-                    if city.state_id == self.id]
+    name = Column(
+            String(128),
+            nullable=False
+            )
+    if getenv("HBNB_TYPE_STORAGE") == "db":
+        cities = relationship("City", cascade="all, delete", backref="state")
     else:
-        name = Column(String(128), nullable=False)
-        cities = relationship('City', backref='state',
-                              cascade='all, delete-orphan')
-
         @property
         def cities(self):
-            """Getter attribute to return list of City
-            instances with matching state_id"""
-            return [city for city in self.cities]
+            """ Returns the list of City instances with state_id """
+            from models import storage
+            city_instances = []
+            cities = storage.all(City)
+            for obj in cities.values():
+                if obj.state_id == self.id:
+                    city_instances.append(obj)
+            return city_instances
