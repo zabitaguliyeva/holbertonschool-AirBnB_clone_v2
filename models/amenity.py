@@ -13,4 +13,5 @@ class Amenity(BaseModel, Base):
                   nullable=False)
     place_amenities = relationship('Place',
                                    secondary='place_amenity',
-                                   viewonly=False)
+                                   viewonly=False,
+                                   overlaps="place_amenities")
