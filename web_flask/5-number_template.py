@@ -41,7 +41,6 @@ def hello_num(n):
 
 @app.route("/number_template/<int:n>", strict_slashes=False)
 def hello_template(n):
-
     """Text"""
     return render.template('5-number.html', n=n)
 
