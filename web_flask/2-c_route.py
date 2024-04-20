@@ -22,7 +22,7 @@ def hello_hbnb():
 def hello_text(text):
     """Text"""
     text = text.replace(" ", "_")
-    return 'C {}'.format(text)
+    return 'C {}\n'.format(text)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
